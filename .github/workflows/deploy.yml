@@ -5,6 +5,7 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  
 
 permissions:
   contents: read
@@ -18,6 +19,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./fluid-ink-studio
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -43,7 +47,7 @@ jobs:
       - name: Upload website
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ./dist
+          path: ./fluid-ink-studio/dist
 
       - name: Publish website
         id: deployment
