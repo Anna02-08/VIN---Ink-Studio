@@ -1,7 +1,11 @@
-# Fluid Ink Studio v1.6 — Dark Atelier
+# Fluid Ink Studio v1.6
 
 A browser-based creative painting studio built with React, TypeScript and HTML Canvas. Create flowing, abstract ink art with an interactive pigment simulation.
+## Live Demo
 
+Fluid Ink Studio is available online and can be used directly in your browser without any installation.
+
+**Try the application:** [Fluid Ink Studio](https://anna02-08.github.io/VIN---Ink-Studio/)
 ## Run locally
 
 Requires Node.js and npm.
