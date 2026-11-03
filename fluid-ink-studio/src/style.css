@@ -1,0 +1,173 @@
+:root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1d293b; background: #eef0f3; font-synthesis: none; text-rendering: optimizeLegibility; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+.app { min-height: 100vh; }
+.topbar { min-height: 76px; background: #101b2d; color: white; display: flex; justify-content: space-between; align-items: center; padding: 14px 30px; gap: 16px; flex-wrap: wrap; }
+.brand { display:flex; align-items:center; gap: 12px; font-size: 17px; font-weight: 500; letter-spacing: 2px; }
+.brand-icon { color: #79e7d0; font-size: 36px; line-height: 1; }
+.top-actions { display:flex; gap: 10px; flex-wrap: wrap; }
+.top-actions button { border:1px solid #3e4b5c; background:#263448; color:#fff; border-radius:8px; padding:10px 16px; }
+.top-actions button:hover:not(:disabled) { background:#35465e; }
+.top-actions button:disabled { opacity:.4; cursor:default; }
+.top-actions .primary { background:#67d7c5; color:#10243a; border-color:#67d7c5; font-weight:700; }
+.workspace { display:grid; grid-template-columns: 300px minmax(0,1fr); min-height: calc(100vh - 76px); }
+.sidebar { background:#fff; border-right:1px solid #e0e4e8; padding: 32px 24px; }
+.eyebrow { color:#448f86; font-size:11px; font-weight:800; letter-spacing:2px; }
+h1 { font-size:26px; line-height:1.18; margin:12px 0; letter-spacing:-.8px; }
+.sidebar>p { line-height:1.65; color:#6c7685; font-size:13px; margin-bottom:30px; }
+.panel { padding:20px 0; border-top:1px solid #e9edf0; }
+h2 { font-size:12px; text-transform:uppercase; letter-spacing:1px; margin:0 0 18px; }
+.palette { display:grid; grid-template-columns:repeat(6,1fr); gap:7px; }
+.swatch { width:100%; aspect-ratio:1; border-radius:50%; border:3px solid white; outline:2px solid transparent; }
+.swatch.selected { outline-color:#334155; }
+.custom-color { margin-top:20px; display:flex; justify-content:space-between; align-items:center; color:#657080; font-size:13px; }
+.custom-color input { width:46px; height:32px; padding:0; border:0; background:transparent; cursor:pointer; }
+.setting-line { display:flex; justify-content:space-between; color:#657080; font-size:13px; }
+.setting-line strong { color:#29374a; }
+.range { width:100%; margin:20px 0; accent-color:#249e91; }
+.brush-preview { height:108px; background:#f4f6f7; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+.brush-preview span { border-radius:50%; max-width:100px; max-height:100px; }
+.hint { background:#e8f7f3; border-radius:12px; color:#376b64; padding:17px; font-size:13px; line-height:1.55; display:grid; gap:8px; margin-top:16px; }
+.hint b { letter-spacing:1px; }
+.stage { min-width:0; padding:26px 36px; display:flex; flex-direction:column; justify-content:center; }
+.stage-header { display:flex; justify-content:space-between; color:#728091; font-size:11px; letter-spacing:1px; font-weight:700; margin-bottom:13px; }
+.stage-header div { display:flex; gap:8px; align-items:center; }
+.status-dot { width:8px; height:8px; border-radius:50%; background:#45b8a4; }
+.canvas-frame { width:100%; box-shadow:0 15px 55px #24344720; border: 9px solid white; border-radius:14px; overflow:hidden; background:#faf8f5; }
+canvas { width:100%; height:auto; display:block; touch-action:none; cursor:crosshair; }
+.footnote { text-align:center; font-size:11px; color:#8993a1; margin-top:18px; }
+@media (max-width:900px) { .workspace { grid-template-columns:1fr; } .sidebar { padding:22px; } .stage { padding:20px; } .topbar { padding:14px 18px; } }
+.tool-options { display:grid; gap:8px; }
+.tool-options button { background:#f5f7f8; border:1px solid #dfe5e8; border-radius:9px; padding:11px 12px; text-align:left; color:#334155; font-size:13px; }
+.tool-options button.active { border-color:#229f90; background:#e9f8f4; color:#14695d; font-weight:700; }
+
+.help-text { display:block; margin-top:12px; color:#80909b; font-size:11px; line-height:1.5; }
+
+/* v1.1: Fixed canvas and independently scrolling settings sidebar. */
+html, body, #root { height: 100%; }
+.app { height: 100dvh; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { flex: 0 0 auto; min-height: 76px; }
+.workspace { flex: 1 1 auto; min-height: 0; height: 0; overflow: hidden; grid-template-columns: 300px minmax(0, 1fr); }
+.sidebar { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.stage { min-height: 0; height: 100%; overflow: hidden; justify-content: flex-start; align-items: center; padding: 16px 26px; gap: 8px; }
+.stage-header { width: 100%; flex: 0 0 auto; align-items: center; margin: 0; gap: 12px; }
+.stage-label { white-space: nowrap; }
+.canvas-size-control { display: inline-flex; align-items: center; gap: 10px; font-size: 12px; color: #657080; letter-spacing: 0; font-weight: 600; white-space: nowrap; }
+.canvas-size-control select { border: 1px solid #d6dee4; border-radius: 8px; padding: 9px 30px 9px 12px; color: #213244; background: white; font-size: 12px; max-width: 245px; cursor: pointer; }
+.canvas-frame { width: min(100%, calc((100dvh - 222px) * 1200 / 760)); max-height: calc(100% - 73px); aspect-ratio: 1200/760; flex: 0 1 auto; display: flex; align-items: center; justify-content: center; }
+.canvas-frame canvas { width: 100%; height: 100%; object-fit: contain; }
+.footnote { flex: 0 0 auto; margin-top: 3px; line-height: 1.4; }
+@media (max-width: 900px) {
+  .workspace { display: grid; grid-template-columns: minmax(200px, 32%) minmax(0, 1fr); }
+  .stage { padding: 12px; }
+  .canvas-size-control { font-size: 0; gap: 0; }
+  .canvas-size-control select { font-size: 12px; }
+}
+@media (max-width: 620px) {
+  .app { overflow: auto; min-height: 100dvh; height: auto; }
+  .workspace { display: flex; flex-direction: column; height: auto; overflow: visible; }
+  .stage { order: 0; position: sticky; top: 0; z-index: 2; height: auto; padding: 10px; background: #eef0f3; }
+  .sidebar { order: 1; overflow: visible; padding: 18px; }
+  .canvas-frame { width: 100%; max-height: none; }
+  .stage-header { flex-wrap: wrap; }
+  .footnote { display:none; }
+}
+
+/* v1.3: Concise interface with information shown on demand. */
+.info-button { border-color: #70bdb4 !important; color: #a7eee1 !important; }
+.info-backdrop { position: fixed; inset: 0; z-index: 100; background: #0c1829a6; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.info-dialog { width: min(100%, 480px); background: #fff; color: #243247; padding: 24px 28px; border-radius: 15px; box-shadow: 0 22px 70px #08142355; line-height: 1.65; font-size: 14px; }
+.info-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.info-heading h2 { font-size: 17px; margin: 0; text-transform: none; letter-spacing: 0; }
+.info-heading button { border: 0; background: #edf2f4; border-radius: 8px; padding: 6px 10px; }
+.info-dialog p { margin: 14px 0 0; }
+.info-note { color: #657080; font-size: 12px; }
+
+/* v1.4 — Dark Atelier: dark workspace and three distinct visible canvas sizes */
+:root { color-scheme: dark; color:#e7e9f2; background:#0b0d14; }
+html,body,#root { background:#0b0d14; }
+.app { background:#0b0d14; }
+.topbar { min-height:72px; background:#11141e; border-bottom:1px solid #292d3a; padding:12px 27px; box-shadow:0 4px 24px #02030a35; }
+.brand { font-size:15px; font-weight:720; letter-spacing:2.2px; color:#f4f5fa; }
+.brand-icon { font-size:29px; color:#8fddda; filter:drop-shadow(0 0 12px #55c8cc55); }
+.version-mark { font-size:10px; letter-spacing:.6px; font-weight:700; color:#a8a0ed; background:#7b6cd51b; border:1px solid #7469b755; border-radius:5px; padding:4px 6px; }
+.top-actions button { background:#1e2330; border:1px solid #383e4d; color:#e3e7f1; border-radius:10px; padding:10px 16px; transition:background .16s, border-color .16s, transform .16s; font-size:12px; font-weight:650; }
+.top-actions button:hover:not(:disabled) { background:#2a3040; border-color:#76768c; transform:translateY(-1px); }
+.top-actions .primary { background:linear-gradient(135deg,#9ee1d2,#74c5c5); border-color:transparent; color:#122c33; box-shadow:0 4px 20px #66e0cb22; }
+.top-actions .primary:hover:not(:disabled) { background:linear-gradient(135deg,#b5efe1,#8bd6d7); }
+.info-button { color:#a4e8db !important; border-color:#386c6c !important; }
+.workspace { grid-template-columns:282px minmax(0,1fr); background:#0d1018; }
+.sidebar { background:#151923; border-right:1px solid #292e3b; padding:26px 21px 36px; scrollbar-color:#444b60 #151923; scrollbar-width:thin; }
+.eyebrow { color:#86c7c0; font-size:10px; font-weight:800; }
+h1 { color:#f4f4fa; font-size:24px; margin:9px 0 25px; letter-spacing:-.9px; }
+.panel { border-top:1px solid #2c3240; padding:20px 0 21px; }
+.panel h2 { color:#a3afc5; font-size:10px; letter-spacing:1.45px; font-weight:800; }
+.tool-options { gap:8px; }
+.tool-options button { background:#202531; border-color:#343b4c; color:#cdd4e3; border-radius:10px; padding:12px 13px; font-size:12px; transition:all .16s; }
+.tool-options button:hover { background:#2a3040; border-color:#576276; }
+.tool-options button.active { color:#abf3e8; border:1px solid #66bdb2; background:linear-gradient(115deg,#19423f,#203a41); box-shadow:inset 3px 0 0 #7cddd0; }
+.palette { gap:5px; }
+.swatch { border:3px solid #151923; outline-offset:2px; transition:transform .14s; }
+.swatch:hover { transform:scale(1.1); }
+.swatch.selected { outline-color:#abdbdd; }
+.custom-color,.setting-line { color:#a3afc3; font-size:12px; }
+.setting-line strong { color:#eef2fa; font-weight:680; font-variant-numeric:tabular-nums; }
+.custom-color input { border:1px solid #646d80; border-radius:5px; background:transparent; padding:1px; }
+.range { accent-color:#78cfc5; margin:18px 0 22px; }
+.brush-preview { background:#202532; border:1px solid #303748; }
+.stage { background:radial-gradient(ellipse 70% 65% at 50% 45%,#222938 0%,#111722 65%,#10131c 100%); padding:23px 28px 26px; gap:20px; }
+.stage-header { color:#a5afc5; max-width:1400px; }
+.stage-label { color:#adbccf; letter-spacing:1.5px; font-size:10px; }
+.status-dot { background:#7bdbca; box-shadow:0 0 0 4px #79dccc18,0 0 12px #56c9c86c; }
+.canvas-size-control { color:#a7b6c9; font-weight:650; font-size:11px; }
+.canvas-size-control select { color:#eef2fa; background:#242a37; border:1px solid #414b5f; border-radius:9px; padding:10px 34px 10px 13px; font-weight:650; max-width:250px; }
+.canvas-size-control select:focus-visible { outline:2px solid #78d2ca; outline-offset:2px; }
+.canvas-size-control option { background:#202632; color:#f0f2f8; }
+/* The size selection determines the actual on-screen width of the canvas.
+   Height follows the aspect ratio while the viewport remains fixed. */
+.canvas-frame { box-sizing:border-box; width:min(100%, var(--art-width), calc((100dvh - 185px) * 30 / 19)); max-width:var(--art-width); max-height:calc(100% - 8px); aspect-ratio:var(--art-ratio); flex:0 1 auto; border:8px solid #f2f0ed; border-radius:13px; background:#faf8f5; box-shadow:0 25px 72px #0009,0 0 0 1px #ffffff20; transition:width .24s ease, box-shadow .24s ease; }
+.canvas-frame canvas { display:block; width:100%; height:100%; object-fit:fill; }
+.info-backdrop { background:#04060cba; backdrop-filter:blur(8px); }
+.info-dialog { background:#1d2330; border:1px solid #424b60; color:#e8ebf3; border-radius:18px; box-shadow:0 25px 100px #000b; }
+.info-heading h2 { color:#f3f5fb; }
+.info-heading button { color:#e9edf6; background:#333a4b; }
+.info-note { color:#a5b4c7; }
+@media(max-width:900px) {
+  .workspace { grid-template-columns:minmax(210px,32%) minmax(0,1fr); }
+  .stage { padding:16px; gap:14px; }
+  .canvas-frame { width:min(100%,var(--art-width),calc((100dvh - 165px) * 30 / 19)); }
+}
+@media(max-width:620px) {
+  .workspace { display:flex; flex-direction:column; }
+  .stage { order:0; top:0; z-index:2; background:#111722; padding:12px; gap:9px; }
+  .sidebar { order:1; }
+  .stage-header { flex-wrap:wrap; }
+  .canvas-frame { width:min(100%, var(--art-width)); max-height:none; }
+}
+
+/* v1.5 — separate zoomable viewport. Only the artwork scrolls when zoomed in. */
+.stage { position:relative; }
+.canvas-viewport { flex:1 1 auto; min-height:0; min-width:0; width:100%; overflow:auto; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:#576175 #171c28; border-radius:14px; }
+.canvas-center { min-width:100%; min-height:100%; display:flex; align-items:center; justify-content:center; width:max-content; padding:12px; }
+.canvas-frame { flex:none; max-width:none; max-height:none; transition:width .18s ease; }
+.canvas-frame canvas { width:100%; height:100%; display:block; }
+.zoom-controls { position:absolute; right:34px; bottom:31px; display:flex; align-items:center; padding:5px; gap:4px; border:1px solid #495164; border-radius:12px; background:#1a2030ed; box-shadow:0 8px 30px #0007; backdrop-filter:blur(10px); z-index:4; }
+.zoom-controls button { color:#e9edf7; font-weight:700; font-size:18px; border:0; background:#2b3446; min-width:32px; height:32px; border-radius:7px; }
+.zoom-controls button:hover:not(:disabled) { background:#41516a; }
+.zoom-controls button:disabled { opacity:.35; cursor:default; }
+.zoom-controls .zoom-reset { font-size:11px; min-width:42px; }
+.zoom-value { min-width:49px; font-size:12px; color:#dbe3ee; text-align:center; font-variant-numeric:tabular-nums; }
+@media(max-width:620px) { .canvas-viewport { max-height:55dvh; } .zoom-controls { right:17px; bottom:17px; } }
+
+/* Keep the canvas-size selector anchored at the upper-right without a canvas label. */
+.stage-header { justify-content: flex-end; }
+
+/* v1.7 — Direction control appears only when Vortex is selected. */
+.vortex-direction { margin-top: 15px; }
+.vortex-direction-label { display: block; color: #a3afc5; font-size: 11px; letter-spacing: .45px; margin-bottom: 9px; }
+.direction-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.direction-options button { background: #202531; color: #cdd4e3; border: 1px solid #343b4c; border-radius: 10px; padding: 10px; font-size: 12px; }
+.direction-options button:hover { background: #2a3040; border-color: #576276; }
+.direction-options button.active { color: #abf3e8; border-color: #66bdb2; background: linear-gradient(115deg,#19423f,#203a41); font-weight: 700; }
